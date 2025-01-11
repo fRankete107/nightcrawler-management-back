@@ -1,0 +1,146 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: nightcrawler
+      changes:
+        - createTable:
+            tableName: empleados
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: nombre
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: nacionalidad
+                  type: varchar(100)
+              - column:
+                  name: telefono
+                  type: varchar(20)
+              - column:
+                  name: residencia
+                  type: varchar(255)
+              - column:
+                  name: fecha_ingreso
+                  type: date
+              - column:
+                  name: cargo_actual
+                  type: varchar(100)
+              - column:
+                  name: rol
+                  type: varchar(20)
+              - column:
+                  name: username
+                  type: varchar(50)
+                  constraints:
+                    unique: true
+              - column:
+                  name: password
+                  type: varchar(255)
+
+  - changeSet:
+      id: 2
+      author: nightcrawler
+      changes:
+        - createTable:
+            tableName: timers
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: empleado_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_timer_empleado
+                    references: empleados(id)
+              - column:
+                  name: fecha_inicio
+                  type: timestamp
+              - column:
+                  name: fecha_fin
+                  type: timestamp
+              - column:
+                  name: descripcion
+                  type: varchar(500) 
+
+  - changeSet:
+      id: 3
+      author: nightcrawler
+      changes:
+        - addColumn:
+            tableName: empleados
+            columns:
+              - column:
+                  name: activo
+                  type: boolean
+                  defaultValue: false
+                  constraints:
+                    nullable: false 
+
+  - changeSet:
+      id: 4
+      author: nightcrawler
+      changes:
+        - addColumn:
+            tableName: empleados
+            columns:
+              - column:
+                  name: imagen
+                  type: varchar(255)
+              - column:
+                  name: foro_id
+                  type: varchar(50) 
+
+  - changeSet:
+      id: 5
+      author: nightcrawler
+      changes:
+        - insert:
+            tableName: empleados
+            columns:
+              - column:
+                  name: nombre
+                  value: "Vincenzo Morelli"
+              - column:
+                  name: nacionalidad
+                  value: "italiana"
+              - column:
+                  name: telefono
+                  value: "2130601"
+              - column:
+                  name: residencia
+                  value: "1665"
+              - column:
+                  name: fecha_ingreso
+                  value: "2025-01-07"
+              - column:
+                  name: cargo_actual
+                  value: "gerente"
+              - column:
+                  name: rol
+                  value: "GERENTE"
+              - column:
+                  name: username
+                  value: "Vincenzo_Morelli"
+              - column:
+                  name: password
+                  value: "$2a$10$ojRtylCxQ35VdBcuZbUxsuPKU0yrS5GaVX6x38FnQ6Hpll3Pw3SQ6"
+              - column:
+                  name: activo
+                  valueNumeric: 0
+              - column:
+                  name: imagen
+                  value: "https://ucp.sa-rp.es/assets/images/skins/46.png"
+              - column:
+                  name: foro_id
+                  value: "6568" 
