@@ -17,9 +17,10 @@ public class CorsConfig {
         
         // Permitir localhost:5173 específicamente
         configuration.setAllowedOrigins(Arrays.asList("https://localhost", "http://localhost", 
+                                                      "http://localhost:5173",
                                                       "https://nightcrawler.webber.com.ar",
                                                       "https://nightcrawler-management.webber.com.ar",
-                                                      "184.169.131.60:443"));
+                                                      "184.169.131.60"));
         
         // Métodos HTTP permitidos
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));

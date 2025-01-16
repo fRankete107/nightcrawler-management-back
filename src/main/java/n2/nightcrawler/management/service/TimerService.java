@@ -30,12 +30,19 @@ public class TimerService {
         return timerRepository.findByEmpleadoId(empleadoId);
     }
 
-    public Timer save(TimerDTO timerDTO) {
-        var empleado = empleadoRepository.findById(timerDTO.getEmpleadoId())
+        public Timer save(TimerDTO timerDTO) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        log.debug("Iniciando guardado de timer para usuario: {}", username);
+        
+        var empleado = empleadoRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+        
+        log.debug("Empleado encontrado: {} (ID: {})", empleado.getNombre(), empleado.getId());
 
         // Si solo recibimos descripción, iniciamos timer y activamos empleado
         if (timerDTO.getFechaInicio() == null && timerDTO.getFechaFin() == null) {
+            log.debug("Creando nuevo timer para empleado");
             Timer timer = new Timer();
             timer.setEmpleado(empleado);
             timer.setDescripcion(timerDTO.getDescripcion());
@@ -45,11 +52,14 @@ public class TimerService {
             empleado.setActivo(true);
             empleadoRepository.save(empleado);
             
-            return timerRepository.save(timer);
+            Timer savedTimer = timerRepository.save(timer);
+            log.debug("Timer guardado con ID: {} para empleado: {} (ID: {})", 
+                     savedTimer.getId(), empleado.getNombre(), empleado.getId());
+            return savedTimer;
         }
         
         // Si recibimos fechas, finalizamos timer y desactivamos empleado
-        Timer timer = timerRepository.findByEmpleadoIdAndFechaFinIsNull(timerDTO.getEmpleadoId())
+        Timer timer = timerRepository.findByFechaFinIsNullAndEmpleado_Username(username)
                 .orElseThrow(() -> new RuntimeException("No hay timer activo para este empleado"));
         
         timer.setFechaFin(LocalDateTime.now());
@@ -58,8 +68,12 @@ public class TimerService {
         empleado.setActivo(false);
         empleadoRepository.save(empleado);
         
-        return timerRepository.save(timer);
+        Timer savedTimer = timerRepository.save(timer);
+        log.debug("Timer finalizado con ID: {} para empleado: {} (ID: {})", 
+                 savedTimer.getId(), empleado.getNombre(), empleado.getId());
+        return savedTimer;
     }
+
 
     public Timer update(TimerDTO timerDTO) {
         Timer timer = timerRepository.findById(timerDTO.getId())

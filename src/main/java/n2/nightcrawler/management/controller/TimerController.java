@@ -5,6 +5,8 @@ import n2.nightcrawler.management.dto.TimerDTO;
 import n2.nightcrawler.management.dto.TimerLogDTO;
 import n2.nightcrawler.management.model.Timer;
 import n2.nightcrawler.management.service.TimerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TimerController {
     
+    private static final Logger log = LoggerFactory.getLogger(TimerController.class);
+    
     private final TimerService timerService;
     
     @GetMapping("/empleado/{empleadoId}")
@@ -26,7 +30,11 @@ public class TimerController {
     
     @PostMapping
     public ResponseEntity<Timer> createTimer(@RequestBody TimerDTO timerDTO) {
-        return ResponseEntity.ok(timerService.save(timerDTO));
+        log.debug("Recibida petición para crear timer. EmpleadoId: {}", timerDTO.getEmpleadoId());
+        Timer savedTimer = timerService.save(timerDTO);
+        log.debug("Timer creado exitosamente con ID: {} para empleadoId: {}", 
+                 savedTimer.getId(), savedTimer.getEmpleado().getId());
+        return ResponseEntity.ok(savedTimer);
     }
     
     @PutMapping("/{id}")
